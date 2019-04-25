@@ -31,7 +31,7 @@ declare type Nothing = {
     readonly tag: "Nothing";
 };
 /**
- * Construct Just a value.
+ * Construct Just `a` value.
  */
 declare const Just: <A>(a: A) => Just<A>;
 /**
@@ -76,9 +76,6 @@ declare const FArray: Readonly<{
     sortBy: <A>(compareBy: Comparable<A>) => (as: readonly A[]) => readonly A[];
     head: <A>(as: readonly A[]) => Maybe<A>;
 }>;
-
-declare const True: boolean;
-declare const False: boolean;
 
 declare const Debug: Readonly<{
     log: (message: string) => <A>(a: A) => A;
@@ -155,4 +152,4 @@ declare const Task: Readonly<{
     sleep: (inMillis: number) => Task<number>;
 }>;
 
-export { Comparable, Debug, Err, FArray, False, Just, Maybe, Nothing, Ok, Result, Task, True, always, alwaysNever, alwaysVoid, compose, dot, flip, identity, pipe };
+export { Comparable, Debug, Err, FArray, Just, Maybe, Nothing, Ok, Result, Task, always, alwaysNever, alwaysVoid, compose, dot, flip, identity, pipe };
