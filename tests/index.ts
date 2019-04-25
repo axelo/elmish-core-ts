@@ -1,5 +1,5 @@
 import "./ArrayHelpTest";
-import "./FunctionHelpersTest";
+import "./FunctionHelpTest";
 import "./MaybeTest";
 import "./ResultTest";
 import "./TaskTest";

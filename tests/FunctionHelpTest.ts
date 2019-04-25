@@ -5,7 +5,7 @@ import {
   flip,
   identity,
   pipe
-} from "../src/FunctionHelpers";
+} from "../src/FunctionHelp";
 import * as Assert from "./Assert";
 
 // HELPERS

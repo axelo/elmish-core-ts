@@ -1,4 +1,4 @@
-import { alwaysVoid, compose, pipe } from "./FunctionHelpers";
+import { alwaysVoid, compose, pipe } from "./FunctionHelp";
 import { Maybe } from "./Maybe";
 import { Err, Ok, Result } from "./Result";
 
