@@ -2,7 +2,7 @@ import { FptsEither, FptsOption } from "./FptsTypes";
 
 export type Maybe<A> = Just<A> | Nothing;
 
-type Just<A> = { readonly tag: "Just"; value: A };
+type Just<A> = { readonly tag: "Just"; readonly value: A };
 type Nothing = { readonly tag: "Nothing" };
 
 const fromNullable = <A>(nullable: A | undefined | null): Maybe<A> =>
