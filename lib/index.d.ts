@@ -68,7 +68,7 @@ declare const Comparable: Readonly<{
     date: Comparable<Date>;
 }>;
 
-declare const FArray: Readonly<{
+declare const ArrayHelp: Readonly<{
     concat: <AS extends readonly unknown[]>(nested: readonly AS[]) => Readonly<AS>;
     filter: <A>(predicate: (a: A) => boolean) => (as: readonly A[]) => readonly A[];
     map: <B, A>(mapper: (a: A) => B) => (as: readonly A[]) => readonly B[];
@@ -152,4 +152,4 @@ declare const Task: Readonly<{
     sleep: (inMillis: number) => Task<number>;
 }>;
 
-export { Comparable, Debug, Err, FArray, Just, Maybe, Nothing, Ok, Result, Task, always, alwaysNever, alwaysVoid, compose, dot, flip, identity, pipe };
+export { ArrayHelp, Comparable, Debug, Err, Just, Maybe, Nothing, Ok, Result, Task, always, alwaysNever, alwaysVoid, compose, dot, flip, identity, pipe };

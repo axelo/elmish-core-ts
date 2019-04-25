@@ -34,7 +34,7 @@ const sortBy = <A>(compareBy: Comparable<A>) => (
 const head = <A>(as: ReadonlyArray<A>): Maybe<A> =>
   as.length === 0 ? Nothing : Just(as[0]);
 
-export const FArray = Object.freeze({
+export const ArrayHelp = Object.freeze({
   concat,
   filter,
   map,
@@ -42,16 +42,3 @@ export const FArray = Object.freeze({
   sortBy,
   head
 });
-
-// const a = flip(filter)([1, 2, 3])(_ => true);
-// const b = concat([[1], [2]]);
-
-// const cc = map(val => true)([1, 2, 3]);
-// const c = flip(map)([1, 2, 3])((val): boolean => true);
-
-// const cc2 = cc[0];
-
-// const aa = pipe(
-//   [1, 2, 3],
-//   map(_ => true)
-// );
