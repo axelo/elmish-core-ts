@@ -1,7 +1,10 @@
 {
   "name": "elmish-core-ts",
-  "version": "0.0.1",
+  "version": "0.0.1-alpha",
   "description": "Write more functional the Elm way with your TypeScript",
+  "repository": {
+    "url": "https://github.com/axelo/elmish-core-ts"
+  },
   "main": "./lib/index.js",
   "types": "./lib/index.d.ts",
   "files": [
@@ -9,7 +12,8 @@
   ],
   "scripts": {
     "test": "ts-node -O '{\"module\": \"commonjs\"}' tests",
-    "build": "rm -rf lib && rollup -c"
+    "build": "rm -rf lib && rollup -c",
+    "prepare": "npm test && npm run build"
   },
   "author": "axelo",
   "license": "MIT",
