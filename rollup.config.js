@@ -10,10 +10,6 @@ export default [
         file: pkg.main,
         format: "commonjs"
       }
-      // {
-      //   file: pkg.module,
-      //   format: "module"
-      // }
     ],
     external: [
       ...Object.keys(pkg.dependencies || {}),
@@ -21,7 +17,7 @@ export default [
     ],
     plugins: [
       resolve({
-        jsnext: true,
+        mainFields: ["module", "main"],
         extensions: [".ts"]
       }),
       ts({
@@ -38,11 +34,7 @@ export default [
       dts(),
       (function removeInvalidTypedefCode() {
         return {
-          renderChunk: code =>
-            code
-              .replace(/^\/\/.*/gm, "")
-              //.replace(/\s+readonly \[run\][^\}]+/m, "\n")
-              .trim()
+          renderChunk: code => code.replace(/^\/\/.*/gm, "").trim()
         };
       })()
     ]
