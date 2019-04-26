@@ -1,7 +1,14 @@
 export type Result<X, Value> = Ok<Value> | Err<X>;
 
-type Ok<A> = { readonly tag: "Ok"; readonly value: A };
-type Err<X> = { readonly tag: "Err"; readonly error: X };
+type Ok<A> = {
+  readonly tag: "Ok";
+  readonly value: A;
+};
+
+type Err<X> = {
+  readonly tag: "Err";
+  readonly error: X;
+};
 
 export const Ok = <A>(value: A): Ok<A> => ({
   tag: "Ok",
@@ -24,6 +31,13 @@ const mapError = <X, Y, A>
     resultA.tag === "Ok" ? resultA : Err(mapper(resultA.error));
 
 export const Result = Object.freeze({
+  /**
+   * Apply a function to a result. If the result is Ok, it will be converted. If the result is an Err, the same error value will propagate through.
+   */
   map,
+
+  /**
+   * Transform an Err value.
+   */
   mapError
 });

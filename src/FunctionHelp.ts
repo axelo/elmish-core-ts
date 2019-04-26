@@ -21,13 +21,22 @@ export const alwaysVoid = (_ignored?: unknown): void => {};
  */
 export const alwaysNever = alwaysVoid as (ignored?: unknown) => never;
 
+/**
+ * Flip the order of two curried arguments.
+ */
 export const flip = <A, B, C>(
   f: (a: A) => (b: B) => C
 ): ((a: B) => (b: A) => C) => b => a => f(a)(b);
 
+/**
+ * Access the value at `key` of `record` without having to create a specific function.
+ */
 export const dot = <A, K extends keyof A>(key: K) => (record: A): A[K] =>
   record[key];
 
+/**
+ * Compose a list of functions into one function.
+ */
 // prettier-ignore
 export const compose: {
   <A, B, C>(b: (a: A) => B, c: (b: B) => C): (a: A) => C;
@@ -41,6 +50,9 @@ export const compose: {
 ): (a: unknown) => unknown => 
   a => funs.reduce(stepFun, a);
 
+/**
+ * Pipe a value through a list of functions. Transforming the value through each step.
+ */
 // prettier-ignore
 export const pipe: {
   <A, B>(a: A, b: (a: A) => B): B;

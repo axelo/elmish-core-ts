@@ -4,5 +4,8 @@ const log = (message: string) => <A>(a: A) => {
 };
 
 export const Debug = Object.freeze({
+  /**
+   * Console log a value with a message.
+   */
   log
 });
