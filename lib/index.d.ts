@@ -128,14 +128,14 @@ declare const pipe: {
     <A, B, C, D, E, F, G>(a: A, b: (a: A) => B, c: (b: B) => C, d: (c: C) => D, e: (d: D) => E, f: (e: E) => F, g: (f: F) => G): G;
 };
 
-declare type Result<ErrResult, Value> = Ok<Value> | Err<ErrResult>;
+declare type Result<X, Value> = Ok<Value> | Err<X>;
 declare type Ok<A> = {
-    tag: "Ok";
-    value: A;
+    readonly tag: "Ok";
+    readonly value: A;
 };
 declare type Err<X> = {
-    tag: "Err";
-    error: X;
+    readonly tag: "Err";
+    readonly error: X;
 };
 declare const Ok: <A>(value: A) => Ok<A>;
 declare const Err: <X>(error: X) => Err<X>;

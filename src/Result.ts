@@ -1,7 +1,7 @@
-export type Result<ErrResult, Value> = Ok<Value> | Err<ErrResult>;
+export type Result<X, Value> = Ok<Value> | Err<X>;
 
-type Ok<A> = { tag: "Ok"; value: A };
-type Err<X> = { tag: "Err"; error: X };
+type Ok<A> = { readonly tag: "Ok"; readonly value: A };
+type Err<X> = { readonly tag: "Err"; readonly error: X };
 
 export const Ok = <A>(value: A): Ok<A> => ({
   tag: "Ok",
