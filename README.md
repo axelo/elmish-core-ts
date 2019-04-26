@@ -2,47 +2,48 @@
 
 A library for writing more functional the Elm way with your TypeScript.
 
-
 ## Examples
+
+### pipe
+
+```typescript
+import { pipe } from "elmish-core-ts";
+
+const addOne = (val: number) => val + 1;
+const addWith = (withWhat: number) => (val: number) => val + withWhat;
+const toString = (val: number): string => String(val);
+const appendWith = (withWhat: string) => (val: string) => val + withWhat;
+
+console.log(
+  pipe(
+    addOne(0), // 0 + 1
+    addWith(5), // 1 + 5
+    toString, // "6"
+    appendWith("!") // "6!"
+  )
+); // 6!
+```
 
 ### Maybe
 
 ```typescript
-import { Just, Nothing, Maybe, pipe, compose } from "elmish-core-ts";
+import { Just, Maybe, Nothing, pipe } from "elmish-core-ts";
 
-type User = Readonly<{
-  username: string;
-  role: "admin" | "user";
-  updatedAt: Maybe<Date>;
-}>;
+console.log(Maybe.withDefault("1970-01-01")(Just("1999-12-31"))); // 1999-12-31
 
-const bob: User = {
-  username: "Bob",
-  role: "admin",
-  updatedAt: Just(new Date(1337))
-};
+console.log(Maybe.withDefault("1970-01-01")(Nothing)); // 1970-01-01
 
-const alice: User = {
-  username: "Alice",
-  role: "user",
-  updatedAt: Nothing
-};
+console.log(
+  pipe(
+    Just("1999-12-31"),
+    Maybe.withDefault("1970-01-01")
+  )
+); // 1999-12-31
 
-const updatedAt: Date = Maybe.withDefault(new Date(0))(bob.updatedAt);
-
-const updatedAt_ = pipe(
-  bob.updatedAt,
-  Maybe.withDefault(new Date(0))
-);
-
-const withDefaultDate = compose(
-  (t: number) => new Date(t),
-  Maybe.withDefault
-);
-
-const updatedAt__: Date = withDefaultDate(0)(bob.updatedAt);
-const updatedAt___: Date = pipe(
-  bob.updatedAt,
-  withDefaultDate(0)
-);
+console.log(
+  pipe(
+    Nothing,
+    Maybe.withDefault("1970-01-01")
+  )
+); // 1970-12-31
 ```
