@@ -50,9 +50,18 @@ export const Just = <A>(a: A): Just<A> => ({ tag: "Just", value: a });
  */
 export const Nothing: Nothing = Object.freeze({ tag: "Nothing" });
 
+/**
+ * A Maybe can be used instead of `null` or `undefined`.
+ */
 export const Maybe = Object.freeze({
-  Fpts,
+  /**
+   * Convert a value that can be `undefined` or `null` to a Maybe value.
+   */
   fromNullable,
+
+  /**
+   * Check if a Maybe value is Nothing.
+   */
   isNothing,
 
   /**
@@ -63,8 +72,8 @@ export const Maybe = Object.freeze({
   /**
    * Transform a Maybe value with a given function.
    */
-
   map,
+
   /**
    * Apply a function if all the arguments are Just a value.
    */
@@ -73,5 +82,10 @@ export const Maybe = Object.freeze({
   /**
    * Chain together many computations that may fail.
    */
-  andThen
+  andThen,
+
+  /**
+   *  Support conversion from fp-ts.
+   */
+  Fpts
 });

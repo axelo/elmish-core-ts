@@ -25,7 +25,7 @@ declare type FptsSome<A> = {
 declare type Maybe<A> = Just<A> | Nothing;
 declare type Just<A> = {
     readonly tag: "Just";
-    value: A;
+    readonly value: A;
 };
 declare type Nothing = {
     readonly tag: "Nothing";
@@ -38,12 +38,17 @@ declare const Just: <A>(a: A) => Just<A>;
  * Nothing.
  */
 declare const Nothing: Nothing;
+/**
+ * A Maybe can be used instead of `null` or `undefined`.
+ */
 declare const Maybe: Readonly<{
-    Fpts: Readonly<{
-        fromEither: <A>(either: FptsEither<unknown, A>) => Maybe<A>;
-        fromOption: <A>(option: FptsOption<A>) => Maybe<A>;
-    }>;
+    /**
+     * Convert a value that can be `undefined` or `null` to a Maybe value.
+     */
     fromNullable: <A>(nullable: A | null | undefined) => Maybe<A>;
+    /**
+     * Check if a Maybe value is Nothing.
+     */
     isNothing: <A>(maybe: Maybe<A>) => maybe is Nothing;
     /**
      * Provide a default value, turning a Maybe value into a normal value.
@@ -61,6 +66,13 @@ declare const Maybe: Readonly<{
      * Chain together many computations that may fail.
      */
     andThen: <A, B>(callback: (a: A) => Maybe<B>) => (maybeA: Maybe<A>) => Maybe<B>;
+    /**
+     *  Support conversion from fp-ts.
+     */
+    Fpts: Readonly<{
+        fromEither: <A>(either: FptsEither<unknown, A>) => Maybe<A>;
+        fromOption: <A>(option: FptsOption<A>) => Maybe<A>;
+    }>;
 }>;
 
 declare type Comparable<C> = (c: C) => number;
