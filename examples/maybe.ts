@@ -17,3 +17,25 @@ console.log(
     Maybe.withDefault("1970-01-01")
   )
 ); // 1970-12-31
+
+const maybeAnswer = Just(42);
+
+switch (maybeAnswer.tag) {
+  case "Just":
+    console.log(maybeAnswer.value);
+    break;
+  case "Nothing":
+    console.log("Nothing");
+    break;
+}
+
+const maybeNextAnswer = Nothing;
+
+switch (maybeNextAnswer.tag) {
+  case "Just":
+    console.log(maybeNextAnswer.value);
+    break;
+  case "Nothing":
+    console.log("Nothing");
+    break;
+}
