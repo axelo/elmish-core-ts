@@ -13,3 +13,21 @@ console.log(
     appendWith("!") // "6!"
   )
 ); // 6!
+
+console.log(
+  pipe(
+    pipe(
+      0,
+      addOne
+    ), // 0 + 1
+    pipe(
+      5,
+      addWith
+    ), // 1 + 5
+    toString, // "6"
+    pipe(
+      "!",
+      appendWith
+    ) // "6!"
+  )
+); // 6!
