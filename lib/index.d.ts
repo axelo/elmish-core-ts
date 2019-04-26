@@ -91,6 +91,9 @@ declare const ArrayHelp: Readonly<{
 }>;
 
 declare const Debug: Readonly<{
+    /**
+     * Console log a value with a message.
+     */
     log: (message: string) => <A>(a: A) => A;
 }>;
 
@@ -110,8 +113,17 @@ declare const alwaysVoid: (_ignored?: unknown) => void;
  * Create a function that always returns `void` but its type signature is `never`.
  */
 declare const alwaysNever: (ignored?: unknown) => never;
+/**
+ * Flip the order of two curried arguments.
+ */
 declare const flip: <A, B, C>(f: (a: A) => (b: B) => C) => (a: B) => (b: A) => C;
+/**
+ * Access the value at `key` of `record` without having to create a specific function.
+ */
 declare const dot: <A, K extends keyof A>(key: K) => (record: A) => A[K];
+/**
+ * Compose a list of functions into one function.
+ */
 declare const compose: {
     <A, B, C>(b: (a: A) => B, c: (b: B) => C): (a: A) => C;
     <A, B, C>(b: (a: A) => B, c: (b: B) => C): (a: A) => C;
@@ -120,6 +132,9 @@ declare const compose: {
     <A, B, C, D, E, F>(b: (a: A) => B, c: (b: B) => C, d: (c: C) => D, e: (d: D) => E, f: (e: E) => F): (a: A) => F;
     <A, B, C, D, E, F, G>(b: (a: A) => B, c: (b: B) => C, d: (c: C) => D, e: (d: D) => E, f: (e: E) => F, g: (f: F) => G): (a: A) => G;
 };
+/**
+ * Pipe a value through a list of functions. Transforming the value through each step.
+ */
 declare const pipe: {
     <A, B>(a: A, b: (a: A) => B): B;
     <A, B, C>(a: A, b: (a: A) => B, c: (b: B) => C): C;
@@ -141,7 +156,13 @@ declare type Err<X> = {
 declare const Ok: <A>(value: A) => Ok<A>;
 declare const Err: <X>(error: X) => Err<X>;
 declare const Result: Readonly<{
+    /**
+     * Apply a function to a result. If the result is Ok, it will be converted. If the result is an Err, the same error value will propagate through.
+     */
     map: <X, A, B>(mapper: (a: A) => B) => (resultA: Result<X, A>) => Result<X, B>;
+    /**
+     * Transform an Err value.
+     */
     mapError: <X, Y, A>(mapper: (a: X) => Y) => (resultA: Result<X, A>) => Result<Y, A>;
 }>;
 
