@@ -20,7 +20,8 @@ const fromFptsEither = <A>(either: FptsEither<unknown, A>): Maybe<A> =>
 const fromFptsOption = <A>(option: FptsOption<A>): Maybe<A> =>
   option._tag === "None" ? Nothing : Just(option.value);
 
-const isNothing = <A>(maybe: Maybe<A>): maybe is Nothing => maybe === Nothing;
+const isNothing = <A>(maybe: Maybe<A>): maybe is Nothing =>
+  maybe.tag === "Nothing";
 
 const withDefault = <A>(a: A) => (maybe: Maybe<A>) =>
   isNothing(maybe) ? a : maybe.value;
