@@ -2,11 +2,23 @@ import { FptsEither, FptsOption } from "./FptsTypes";
 
 export type Maybe<A> = Just<A> | Nothing;
 
-type Just<A> = { readonly tag: "Just"; readonly value: A };
-type Nothing = { readonly tag: "Nothing" };
+type Just<A> = {
+  readonly tag: "Just";
+  readonly value: A;
+};
+
+type Nothing = {
+  readonly tag: "Nothing";
+};
 
 const fromNullable = <A>(nullable: A | undefined | null): Maybe<A> =>
   nullable === null || nullable === undefined ? Nothing : Just(nullable);
+
+const fromFptsEither = <A>(either: FptsEither<unknown, A>): Maybe<A> =>
+  either._tag === "Left" ? Nothing : Just(either.value);
+
+const fromFptsOption = <A>(option: FptsOption<A>): Maybe<A> =>
+  option._tag === "None" ? Nothing : Just(option.value);
 
 const isNothing = <A>(maybe: Maybe<A>): maybe is Nothing => maybe === Nothing;
 
@@ -32,23 +44,17 @@ const andThen = <A, B>
       ? Nothing
       : callback(maybeA.value);
 
-const Fpts = Object.freeze({
-  fromEither: <A>(either: FptsEither<unknown, A>): Maybe<A> =>
-    either._tag === "Left" ? Nothing : Just(either.value),
-
-  fromOption: <A>(option: FptsOption<A>): Maybe<A> =>
-    option._tag === "None" ? Nothing : Just(option.value)
-});
-
 /**
  * Construct Just `a` value.
  */
-export const Just = <A>(a: A): Just<A> => ({ tag: "Just", value: a });
+export const Just = <A>(a: A): Maybe<A> => ({ tag: "Just", value: a });
 
 /**
  * Nothing.
  */
-export const Nothing: Nothing = Object.freeze({ tag: "Nothing" });
+export const Nothing: Maybe<any> = Object.freeze({
+  tag: "Nothing"
+});
 
 /**
  * A Maybe can be used instead of `null` or `undefined`.
@@ -58,6 +64,16 @@ export const Maybe = Object.freeze({
    * Convert a value that can be `undefined` or `null` to a Maybe value.
    */
   fromNullable,
+
+  /**
+   * Convert from fp-ts `Either`.
+   */
+  fromFptsEither,
+
+  /**
+   * Convert from fp-ts `Option`.
+   */
+  fromFptsOption,
 
   /**
    * Check if a Maybe value is Nothing.
@@ -82,10 +98,5 @@ export const Maybe = Object.freeze({
   /**
    * Chain together many computations that may fail.
    */
-  andThen,
-
-  /**
-   *  Support conversion from fp-ts.
-   */
-  Fpts
+  andThen
 });

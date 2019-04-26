@@ -33,11 +33,11 @@ declare type Nothing = {
 /**
  * Construct Just `a` value.
  */
-declare const Just: <A>(a: A) => Just<A>;
+declare const Just: <A>(a: A) => Maybe<A>;
 /**
  * Nothing.
  */
-declare const Nothing: Nothing;
+declare const Nothing: Maybe<any>;
 /**
  * A Maybe can be used instead of `null` or `undefined`.
  */
@@ -46,6 +46,14 @@ declare const Maybe: Readonly<{
      * Convert a value that can be `undefined` or `null` to a Maybe value.
      */
     fromNullable: <A>(nullable: A | null | undefined) => Maybe<A>;
+    /**
+     * Convert from fp-ts `Either`.
+     */
+    fromFptsEither: <A>(either: FptsEither<unknown, A>) => Maybe<A>;
+    /**
+     * Convert from fp-ts `Option`.
+     */
+    fromFptsOption: <A>(option: FptsOption<A>) => Maybe<A>;
     /**
      * Check if a Maybe value is Nothing.
      */
@@ -66,13 +74,6 @@ declare const Maybe: Readonly<{
      * Chain together many computations that may fail.
      */
     andThen: <A, B>(callback: (a: A) => Maybe<B>) => (maybeA: Maybe<A>) => Maybe<B>;
-    /**
-     *  Support conversion from fp-ts.
-     */
-    Fpts: Readonly<{
-        fromEither: <A>(either: FptsEither<unknown, A>) => Maybe<A>;
-        fromOption: <A>(option: FptsOption<A>) => Maybe<A>;
-    }>;
 }>;
 
 declare type Comparable<C> = (c: C) => number;
