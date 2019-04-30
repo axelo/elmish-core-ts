@@ -1,14 +1,12 @@
-import { alwaysVoid, compose, pipe } from "./FunctionHelp";
+import { alwaysVoid, compose, alwaysNever } from "./FunctionHelp";
 import { Maybe } from "./Maybe";
 import { Err, Ok, Result } from "./Result";
 
-const tag = Symbol("Task");
-const run = Symbol("run task");
+const taskTag = Symbol("task");
 
-export type Task<A> = {
-  readonly tag: typeof tag;
-  readonly run?: typeof run; // rollup workaround to preserve run symbol
-  readonly [run]: () => PromiseLike<Result<Error, A>>;
+export type Task<X, A> = {
+  readonly tag: typeof taskTag;
+  readonly [taskTag]: () => PromiseLike<Result<X, A>>;
 };
 
 const reasonToError = (reason: unknown): Error => {
@@ -21,78 +19,84 @@ const reasonToError = (reason: unknown): Error => {
     : new Error(String(reason));
 };
 
-const fromPromise = <A>(promiseLazy: () => PromiseLike<A>): Task<A> => ({
-  tag,
-  [run]: () => promiseLazy().then(Ok)
+const fromPromise = <X, A>(
+  promiseLazy: () => PromiseLike<A>,
+  onrejected: (reason: unknown) => X
+): Task<X, A> => ({
+  tag: taskTag,
+  [taskTag]: () =>
+    // Catch exceptions thrown from `promiseLazy` in onrejected callback by
+    // starting from `Promise.resolve`
+    Promise.resolve()
+      .then(promiseLazy)
+      .then(value => Ok(value), reason => Err(onrejected(reason)))
 });
 
-const fromCallback = <I, A>(
-  fun: (input: I, callback: (e: unknown, r?: A) => void) => void
-): ((input: I) => Task<A>) => input => {
-  const cbPromise: Promise<Result<Error, A>> = new Promise(resolve => {
+const fromCallback = <I, X, A>(
+  fun: (input: I, callback: (e: X, r?: A) => void) => void
+): ((input: I) => Task<X, A>) => input => {
+  const cbPromise: Promise<Result<X, A>> = new Promise(resolve => {
     fun(input, (err, value) => {
       err !== null || err !== undefined
-        ? resolve(Err(reasonToError(err)))
-        : value === null || value === undefined
-        ? resolve(Err(new Error("fromCallback: Value missing")))
-        : resolve(Ok(value));
+        ? resolve(Err(err))
+        : resolve(Ok(value as A));
     });
   });
 
   return {
-    tag,
-    [run]: () => cbPromise
+    tag: taskTag,
+    [taskTag]: () => cbPromise
   };
 };
 
-const fromMaybe = (errorWhenNothing: Error) => <A>(maybe: Maybe<A>): Task<A> =>
+const fromMaybe = <X>(errorWhenNothing: X) => <A>(
+  maybe: Maybe<A>
+): Task<X, A> =>
   Maybe.isNothing(maybe) ? fail(errorWhenNothing) : succeed(maybe.value);
 
-const succeed = <A>(a: A): Task<A> => ({
-  tag,
-  [run]: () => Promise.resolve(Ok(a))
+const succeed = <X, A>(a: A): Task<X, A> => ({
+  tag: taskTag,
+  [taskTag]: () => Promise.resolve(Ok(a))
 });
 
-const fail = (error: Error): Task<never> => ({
-  tag,
-  [run]: () => Promise.resolve(Err(error))
+const fail = <X, A>(error: X): Task<X, A> => ({
+  tag: taskTag,
+  [taskTag]: () => Promise.resolve(Err(error))
 });
 
-const map = <A, B>(mapper: (a: A) => B) => (taskA: Task<A>): Task<B> => ({
-  tag,
-  [run]: () => taskA[run]().then(Result.map(mapper))
+const map = <X, A, B>(mapper: (a: A) => B) => (
+  taskA: Task<X, A>
+): Task<X, B> => ({
+  tag: taskTag,
+  [taskTag]: () => taskA[taskTag]().then(Result.map(mapper))
 });
 
-const andThen = <A, B>(callback: (a: A) => Task<B>) => (
-  taskA: Task<A>
-): Task<B> => ({
-  tag,
-  [run]: () =>
-    taskA[run]()
+const andThen = <X, A, B>(callback: (a: A) => Task<X, B>) => (
+  taskA: Task<X, A>
+): Task<X, B> => ({
+  tag: taskTag,
+  [taskTag]: () =>
+    taskA[taskTag]()
       .then(result =>
-        result.tag === "Err" ? fail(result.error) : callback(result.value)
+        result.tag === "Err" ? fail<X, B>(result.error) : callback(result.value)
       )
-      .then(nextTask => nextTask[run]())
+      .then(nextTask => nextTask[taskTag]())
 });
 
-// prettier-ignore
-const attempt = <A>
-  (callback: (result: Result<Error, A>) => void) =>
-  (task: Task<A>): void => 
-    // Catch exceptions thrown from `task[run]` in onrejected callback by
-    // starting from `Promise.resolve`
-    (Promise.resolve()
-      .then(task[run])
-      .then(callback, compose(reasonToError, Err, callback))
-      .then(alwaysVoid, alwaysVoid) as unknown) as void;
+const attempt = <X, A>(callback: (result: Result<X, A>) => void) => (
+  task: Task<X, A>
+): void =>
+  (task[taskTag]()
+    .then(callback)
+    .then(alwaysVoid, () => {
+      console.error("Should not have been called");
+    }) as unknown) as void;
 
-const sleep = (inMillis: number): Task<number> => ({
-  tag,
-  [run]: () =>
-    new Promise((resolve: (value?: Result<never, number>) => void) =>
-      setTimeout(() => resolve(Ok(inMillis)), inMillis)
-    )
-});
+const sleep = (inMillis: number): Task<never, number> =>
+  fromPromise(
+    () => new Promise(resolve => setTimeout(resolve, inMillis)),
+    alwaysNever
+  );
 
 export const Task = Object.freeze({
   reasonToError,

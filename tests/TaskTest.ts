@@ -19,7 +19,7 @@ import { compose, Debug, pipe, Task } from "../src";
   await pipe(
     Task.fromPromise(() => {
       throw new Error("Throw from fromPromise");
-    }),
+    }, Task.reasonToError),
     // Task.succeed("ok!"),
     Task.map(_ => {
       throw new Error("Throw from Map");
@@ -29,7 +29,7 @@ import { compose, Debug, pipe, Task } from "../src";
 
   await pipe(
     Task.succeed("ok!"),
-    Task.map(msg => msg + "!!"),
+    Task.map((msg: string) => msg + "!!"),
     Task.attempt(Debug.log("Result"))
   );
 
@@ -52,11 +52,11 @@ import { compose, Debug, pipe, Task } from "../src";
   // await Task.attempt(Debug.log(""))(Task.succeed("yeah!"));
   // await Task.attempt(Debug.log(""))(Task.fail("dayum!"));
 
-  // await pipe(
-  //   Task.sleep(5000),
-  //   Task.andThen(() => Task.succeed("SOVIT!!!")),
-  //   Task.attempt(Debug.log(""))
-  // );
+  await pipe(
+    Task.sleep(1000),
+    Task.andThen(() => Task.succeed("SOVIT!!!")),
+    Task.attempt(Debug.log(""))
+  );
 
   // const t1 = pipe(
   //   "yeah",
