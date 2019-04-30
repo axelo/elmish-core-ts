@@ -153,8 +153,8 @@ declare type Err<X> = {
     readonly tag: "Err";
     readonly error: X;
 };
-declare const Ok: <A>(value: A) => Ok<A>;
-declare const Err: <X>(error: X) => Err<X>;
+declare const Ok: <X, A>(value: A) => Result<X, A>;
+declare const Err: <X, A>(error: X) => Result<X, A>;
 declare const Result: Readonly<{
     /**
      * Apply a function to a result. If the result is Ok, it will be converted. If the result is an Err, the same error value will propagate through.
@@ -166,24 +166,22 @@ declare const Result: Readonly<{
     mapError: <X, Y, A>(mapper: (a: X) => Y) => (resultA: Result<X, A>) => Result<Y, A>;
 }>;
 
-declare const tag: unique symbol;
-declare const run: unique symbol;
-declare type Task<A> = {
-    readonly tag: typeof tag;
-    readonly run?: typeof run;
-    readonly [run]: () => PromiseLike<Result<Error, A>>;
+declare const taskTag: unique symbol;
+declare type Task<X, A> = {
+    readonly tag: typeof taskTag;
+    readonly [taskTag]: () => PromiseLike<Result<X, A>>;
 };
 declare const Task: Readonly<{
     reasonToError: (reason: unknown) => Error;
-    attempt: <A>(callback: (result: Result<Error, A>) => void) => (task: Task<A>) => void;
-    fromPromise: <A>(promiseLazy: () => PromiseLike<A>) => Task<A>;
-    fromCallback: <I, A>(fun: (input: I, callback: (e: unknown, r?: A | undefined) => void) => void) => (input: I) => Task<A>;
-    fromMaybe: (errorWhenNothing: Error) => <A>(maybe: Maybe<A>) => Task<A>;
-    map: <A, B>(mapper: (a: A) => B) => (taskA: Task<A>) => Task<B>;
-    succeed: <A>(a: A) => Task<A>;
-    fail: (error: Error) => Task<never>;
-    andThen: <A, B>(callback: (a: A) => Task<B>) => (taskA: Task<A>) => Task<B>;
-    sleep: (inMillis: number) => Task<number>;
+    attempt: <X, A>(callback: (result: Result<X, A>) => void) => (task: Task<X, A>) => void;
+    fromPromise: <X, A>(promiseLazy: () => PromiseLike<A>, onrejected: (reason: unknown) => X) => Task<X, A>;
+    fromCallback: <I, X, A>(fun: (input: I, callback: (e: X, r?: A | undefined) => void) => void) => (input: I) => Task<X, A>;
+    fromMaybe: <X>(errorWhenNothing: X) => <A>(maybe: Maybe<A>) => Task<X, A>;
+    map: <X, A, B>(mapper: (a: A) => B) => (taskA: Task<X, A>) => Task<X, B>;
+    succeed: <X, A>(a: A) => Task<X, A>;
+    fail: <X, A>(error: X) => Task<X, A>;
+    andThen: <X, A, B>(callback: (a: A) => Task<X, B>) => (taskA: Task<X, A>) => Task<X, B>;
+    sleep: (inMillis: number) => Task<never, number>;
 }>;
 
 export { ArrayHelp, Comparable, Debug, Err, Just, Maybe, Nothing, Ok, Result, Task, always, alwaysNever, alwaysVoid, compose, dot, flip, identity, pipe };
