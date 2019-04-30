@@ -9,15 +9,14 @@ export type Task<X, A> = {
   readonly [taskTag]: () => PromiseLike<Result<X, A>>;
 };
 
-const reasonToError = (reason: unknown): Error => {
-  return reason instanceof Error
+const reasonToError = (reason: unknown): Error =>
+  reason instanceof Error
     ? reason
     : typeof reason === "string"
     ? new Error(reason)
     : reason === undefined
     ? new Error()
     : new Error(String(reason));
-};
 
 const fromPromise = <X, A>(
   promiseLazy: () => PromiseLike<A>,
@@ -35,7 +34,7 @@ const fromPromise = <X, A>(
 const fromCallback = <I, X, A>(
   fun: (input: I, callback: (e: X, r?: A) => void) => void
 ): ((input: I) => Task<X, A>) => input => {
-  const cbPromise: Promise<Result<X, A>> = new Promise(resolve => {
+  const cbPromise: PromiseLike<Result<X, A>> = new Promise(resolve => {
     fun(input, (err, value) => {
       err !== null || err !== undefined
         ? resolve(Err(err))
@@ -76,11 +75,11 @@ const andThen = <X, A, B>(callback: (a: A) => Task<X, B>) => (
 ): Task<X, B> => ({
   tag: taskTag,
   [taskTag]: () =>
-    taskA[taskTag]()
-      .then(result =>
-        result.tag === "Err" ? fail<X, B>(result.error) : callback(result.value)
-      )
-      .then(nextTask => nextTask[taskTag]())
+    taskA[taskTag]().then((result: Result<X, A>) =>
+      (result.tag === "Err"
+        ? fail<X, B>(result.error)
+        : callback(result.value))[taskTag]()
+    )
 });
 
 const attempt = <X, A>(callback: (result: Result<X, A>) => void) => (
