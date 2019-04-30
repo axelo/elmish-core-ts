@@ -3,6 +3,10 @@ import { Err, Ok } from "../src";
 
 const assert = Assert.fromFile(__filename);
 
-assert(Err("bad").error === "bad", "Err preserves value");
+const err = Err("bad");
 
-assert(Ok("success").value === "success", "Ok preserves value");
+assert(err.tag === "Err" && err.error === "bad", "Err preserves value");
+
+const ok = Ok("success");
+
+assert(ok.tag === "Ok" && ok.value === "success", "Ok preserves value");

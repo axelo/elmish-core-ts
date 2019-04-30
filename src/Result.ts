@@ -10,12 +10,12 @@ type Err<X> = {
   readonly error: X;
 };
 
-export const Ok = <A>(value: A): Ok<A> => ({
+export const Ok = <X, A>(value: A): Result<X, A> => ({
   tag: "Ok",
   value
 });
 
-export const Err = <X>(error: X): Err<X> => ({
+export const Err = <X, A>(error: X): Result<X, A> => ({
   tag: "Err",
   error
 });
