@@ -53,7 +53,7 @@ export const Just = <A>(a: A): Maybe<A> => ({ tag: "Just", value: a });
 /**
  * Nothing.
  */
-export const Nothing: Maybe<any> = Object.freeze({
+export const Nothing: Maybe<never> = Object.freeze({
   tag: "Nothing"
 });
 
