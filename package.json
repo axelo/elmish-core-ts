@@ -1,6 +1,6 @@
 {
   "name": "elmish-core-ts",
-  "version": "0.0.1-alpha",
+  "version": "0.0.2-alpha",
   "description": "Write more functional the Elm way with your TypeScript",
   "repository": {
     "url": "https://github.com/axelo/elmish-core-ts"
