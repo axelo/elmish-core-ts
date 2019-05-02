@@ -1,19 +1,19 @@
 // import * as Assert from "./Assert";
-import { compose, Debug, pipe, Task } from "../src";
+import { Debug, pipe, Task } from "../src";
 
 (async () => {
   const addExpl = (s: string) => s + "!";
   const addQues = (s: string) => s + "?";
 
-  const t = pipe(
+  await pipe(
     Task.succeed("ok"),
-    Task.map(
-      compose(
-        addExpl,
-        addQues
-      )
+    Task.andThen(status =>
+      status === "ok"
+        ? Task.fail(new Error("Missing 'dagar'"))
+        : Task.succeed(1337)
     ),
-    Task.map(s => s + " :)")
+    Task.map(a => a),
+    Task.attempt(Debug.log("Result"))
   );
 
   await pipe(

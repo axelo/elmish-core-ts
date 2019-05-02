@@ -1,4 +1,4 @@
-import { alwaysVoid, compose, alwaysNever } from "./FunctionHelp";
+import { alwaysNever } from "./FunctionHelp";
 import { Maybe } from "./Maybe";
 import { Err, Ok, Result } from "./Result";
 
@@ -53,12 +53,12 @@ const fromMaybe = <X>(errorWhenNothing: X) => <A>(
 ): Task<X, A> =>
   Maybe.isNothing(maybe) ? fail(errorWhenNothing) : succeed(maybe.value);
 
-const succeed = <X, A>(a: A): Task<X, A> => ({
+const succeed = <A, X = never>(a: A): Task<X, A> => ({
   tag: taskTag,
   [taskTag]: () => Promise.resolve(Ok(a))
 });
 
-const fail = <X, A>(error: X): Task<X, A> => ({
+const fail = <X, A = never>(error: X): Task<X, A> => ({
   tag: taskTag,
   [taskTag]: () => Promise.resolve(Err(error))
 });
@@ -84,12 +84,10 @@ const andThen = <X, A, B>(callback: (a: A) => Task<X, B>) => (
 
 const attempt = <X, A>(callback: (result: Result<X, A>) => void) => (
   task: Task<X, A>
-): void =>
-  (task[taskTag]()
-    .then(callback)
-    .then(alwaysVoid, () => {
-      console.error("Should not have been called");
-    }) as unknown) as void;
+) => task[taskTag]().then(callback) as PromiseLike<never>;
+
+const now = (): Task<never, Date> =>
+  fromPromise(() => Promise.resolve(new Date()), alwaysNever);
 
 const sleep = (inMillis: number): Task<never, number> =>
   fromPromise(
@@ -107,5 +105,6 @@ export const Task = Object.freeze({
   succeed,
   fail,
   andThen,
+  now,
   sleep
 });
