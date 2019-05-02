@@ -37,7 +37,7 @@ declare const Just: <A>(a: A) => Maybe<A>;
 /**
  * Nothing.
  */
-declare const Nothing: Maybe<any>;
+declare const Nothing: Maybe<never>;
 /**
  * A Maybe can be used instead of `null` or `undefined`.
  */
@@ -173,14 +173,15 @@ declare type Task<X, A> = {
 };
 declare const Task: Readonly<{
     reasonToError: (reason: unknown) => Error;
-    attempt: <X, A>(callback: (result: Result<X, A>) => void) => (task: Task<X, A>) => void;
+    attempt: <X, A>(callback: (result: Result<X, A>) => void) => (task: Task<X, A>) => PromiseLike<never>;
     fromPromise: <X, A>(promiseLazy: () => PromiseLike<A>, onrejected: (reason: unknown) => X) => Task<X, A>;
     fromCallback: <I, X, A>(fun: (input: I, callback: (e: X, r?: A | undefined) => void) => void) => (input: I) => Task<X, A>;
     fromMaybe: <X>(errorWhenNothing: X) => <A>(maybe: Maybe<A>) => Task<X, A>;
     map: <X, A, B>(mapper: (a: A) => B) => (taskA: Task<X, A>) => Task<X, B>;
-    succeed: <X, A>(a: A) => Task<X, A>;
-    fail: <X, A>(error: X) => Task<X, A>;
+    succeed: <A, X = never>(a: A) => Task<X, A>;
+    fail: <X, A = never>(error: X) => Task<X, A>;
     andThen: <X, A, B>(callback: (a: A) => Task<X, B>) => (taskA: Task<X, A>) => Task<X, B>;
+    now: () => Task<never, Date>;
     sleep: (inMillis: number) => Task<never, number>;
 }>;
 
