@@ -1,3 +1,7 @@
+# DEPRECATED
+
+To be useful, this should be part of the language itself. A library/framework will never be able to achieve the same thing consistently.
+
 # elmish-core-ts
 
 A library for writing more functional the Elm way with your TypeScript.
